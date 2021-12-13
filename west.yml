@@ -1,0 +1,49 @@
+# The west manifest file for ztime.
+#
+# The per-installation west configuration file specifies the location of this
+# manifest file. The "path" option in the [manifest] section of .west/config
+# defines the folder that contains west.yml. The path is relative to the folder
+# that contains .west.
+#
+# You can create your own manifest files and put them in any
+# repository you want, to create your own custom Pinetime installation.
+# For example, you could create a manifest file in your own
+# out-of-tree application directory, which would pull the pinetime repository
+# in as an ordinary project.
+#
+# You can pass your manifest repositories to west init when creating a
+# new pinetime installation. See the west documentation for more
+# information.
+
+manifest:
+  defaults:
+    remote: ztime
+
+  remotes:
+    - name: ztime
+      url-base: https://github.com/zephyrproject-rtos
+
+  projects:
+    - name: cmsis
+      revision: b0612c97c1401feeb4160add6462c3627fe90fc7
+      path: modules/hal/cmsis
+    - name: hal_nordic
+      revision: a6e5299041f152da5ae0ab17b2e44e088bb96d6d
+      path: modules/hal/nordic
+    - name: mcuboot
+      revision: 70bfbd21cdf5f6d1402bc8d0031e197222ed2ec0
+      path: bootloader/mcuboot
+    - name: mcumgr
+      revision: 31a2aa9cea58d3ceecbf0d5b91361bff7c94aeca
+      path: modules/lib/mcumgr
+    - name: tinycbor
+      revision: 40daca97b478989884bffb5226e9ab73ca54b8c4
+      path: modules/lib/tinycbor
+    - name: segger
+      revision: 3a52ab222133193802d3c3b4d21730b9b1f1d2f6
+      path: modules/debug/segger
+    - name: zephyr
+      west-commands: scripts/west-commands.yml
+      revision: v2.7.0
+  self:
+    path: ztime

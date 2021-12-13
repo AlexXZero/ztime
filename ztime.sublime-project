@@ -1,0 +1,58 @@
+{
+    "build_systems":
+    [
+        {
+            "name": "ztime",
+            "variants":
+            [
+                {
+                    "shell_cmd": "west build -p auto -b pinetime_devkit0",
+                    "name": "build"
+                },
+                {
+                    "shell_cmd": "rm -rf build",
+                    "name": "clean"
+                },
+                /*{
+                    "shell_cmd": "west flash --runner jlink",
+                    "name": "flash-jlink"
+                },*/
+                /*{
+                    "shell_cmd": "west flash",
+                    "name": "flash"
+                },*/
+            ],
+            "working_dir": "${project_path}"
+        }
+    ],
+    "folders":
+    [
+        {
+            "path": ".",
+            "folder_exclude_patterns":[
+                ".west",
+                "build",
+                "_build",
+                "Output",
+            ],
+            "file_exclude_patterns":[
+                "*.zip",
+                "*.bin",
+                "*.csv",
+                "*.hex",
+                "*.jlink",
+                "*.tags",
+                ".tags_sorted_by_file",
+            ]
+        },
+    ],
+    "settings":
+    {
+        "ensure_newline_at_eof_on_save": true,
+        "highlight_line": true,
+        "rulers": [80],
+        "tab_size": 2,
+        "translate_tabs_to_spaces": true,
+        "trim_trailing_white_space_on_save": true
+    }
+}
