@@ -1,0 +1,11 @@
+# PineTime watch board configuration
+
+if BOARD_PINETIME
+
+config BOARD
+	default "pinetime"
+
+config BT_CTLR
+	default BT
+
+endif # BOARD_PINETIME

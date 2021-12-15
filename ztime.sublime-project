@@ -6,7 +6,7 @@
             "variants":
             [
                 {
-                    "shell_cmd": "west build -p auto -b pinetime_devkit0",
+                    "shell_cmd": "west build -p auto -b pinetime && imgtool create --align 4 --version 1.0.0 --header-size 512 --slot-size 475136 build/zephyr/zephyr.bin build/zephyr/zephyr.mcu.bin && adafruit-nrfutil dfu genpkg --dev-type 0x0052 --application build/zephyr/zephyr.mcu.bin build/zephyr/zephyr.zip",
                     "name": "build"
                 },
                 {

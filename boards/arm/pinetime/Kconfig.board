@@ -1,0 +1,5 @@
+# PineTime watch board configuration
+
+config BOARD_PINETIME     
+	bool "pinetime"
+	depends on SOC_NRF52832_QFAA

@@ -1,83 +1,64 @@
-/*
- * Copyright (c) 2020 Stephane Dorre <stephane.dorre@gmail.com>
- *
- * SPDX-License-Identifier: Apache-2.0
- */
+#include "bluetooth.h"      // for bluetooth_init()
 
-#include <sys/printk.h>
 #include <zephyr.h>
-#include <drivers/gpio.h>
+#include <power/reboot.h>   // for sys_reboot()
 
-static void button_pressed(const struct device *dev,
-			   struct gpio_callback *cb, uint32_t pins)
+#ifdef CONFIG_MCUMGR_CMD_OS_MGMT
+#include "os_mgmt/os_mgmt.h"
+#endif
+#ifdef CONFIG_MCUMGR_CMD_IMG_MGMT
+#include "img_mgmt/img_mgmt.h"
+#endif
+#ifdef CONFIG_MCUMGR_CMD_STAT_MGMT
+#include "stat_mgmt/stat_mgmt.h"
+#endif
+#ifdef CONFIG_MCUMGR_CMD_SHELL_MGMT
+#include "shell_mgmt/shell_mgmt.h"
+#endif
+
+#include <logging/log.h>
+LOG_MODULE_REGISTER(ztime, LOG_LEVEL_INF);
+
+
+static bool wdt_is_enabled(void)
 {
-	printk("Button pressed at %" PRIu32 "\n", k_cycle_get_32());
+  return NRF_WDT->RUNSTATUS;
 }
 
-static struct gpio_callback button_cb;
-
-int main(void)
+static void wdt_feed(void)
 {
-	int ret = 0;
-	const struct device *dev_gpio = NULL;
+  NRF_WDT->RR[0] = WDT_RR_RR_Reload;
+}
 
-	/* Only one GPIO peripheral in nRF52832 */
-	/* So let's take the same for led AND button */
-	dev_gpio = device_get_binding(DT_GPIO_LABEL(DT_ALIAS(led0), gpios));
-	if (!dev_gpio) {
-		return (-EOPNOTSUPP);
-	}
+void main(void)
+{
+#ifdef CONFIG_MCUMGR_CMD_OS_MGMT
+  os_mgmt_register_group();
+#endif
+#ifdef CONFIG_MCUMGR_CMD_IMG_MGMT
+  img_mgmt_register_group();
+#endif
+#ifdef CONFIG_MCUMGR_CMD_STAT_MGMT
+  stat_mgmt_register_group();
+#endif
+#ifdef CONFIG_MCUMGR_CMD_SHELL_MGMT
+  shell_mgmt_register_group();
+#endif
 
-	ret = gpio_pin_configure(dev_gpio, DT_GPIO_PIN(DT_ALIAS(led0), gpios),
-			   GPIO_OUTPUT |
-			   DT_GPIO_FLAGS(DT_ALIAS(led0), gpios));
-	if (ret != 0) {
-		printk("Error %d: failed to configure pin %d '%s'\n",
-			ret, DT_GPIO_PIN(DT_ALIAS(led0), gpios), DT_LABEL(DT_ALIAS(led0)));
-		return ret;
-	}
+#ifdef CONFIG_BT
+  bluetooth_init();
+#endif
 
-	ret = gpio_pin_configure(dev_gpio, DT_GPIO_PIN(DT_ALIAS(sw0), gpios),
-				 GPIO_INPUT | GPIO_INT_EDGE_TO_ACTIVE |
-				 DT_GPIO_FLAGS(DT_ALIAS(sw0), gpios));
-	if (ret != 0) {
-		printk("Error %d: failed to configure pin %d '%s'\n",
-			ret, DT_GPIO_PIN(DT_ALIAS(sw0), gpios), DT_LABEL(DT_ALIAS(sw0)));
-		return ret;
-	}
+  /* The system work queue handles all incoming mcumgr requests.  Let the
+   * main thread idle while the mcumgr server runs.
+   */
+  for (size_t i = 0; i < 120; i++) { // 2 minutes
+    if (wdt_is_enabled()) {
+      wdt_feed();
+    }
+    //k_cpu_idle();
+    k_msleep(1000); // should be less 7 seconds to avoid WDT reboot
+  }
 
-	gpio_init_callback(&button_cb, button_pressed,
-			   BIT(DT_GPIO_PIN(DT_ALIAS(sw0), gpios)));
-
-	gpio_add_callback(dev_gpio, &button_cb);
-
-	/* Pinetime trick : Enable button */
-	ret = gpio_pin_configure(dev_gpio, DT_GPIO_PIN(DT_ALIAS(sw1), gpios),
-				 GPIO_OUTPUT_ACTIVE |
-				 DT_GPIO_FLAGS(DT_ALIAS(sw1), gpios));
-	if (ret != 0) {
-		printk("Error %d: failed to configure pin %d '%s'\n",
-			ret, DT_GPIO_PIN(DT_ALIAS(sw1), gpios), DT_LABEL(DT_ALIAS(sw1)));
-		return ret;
-	}
-
-	printk("Init Done.");
-
-	while (1) {
-		/* button is pressed ==> turn on status LED */
-		uint32_t val = 0u;
-		uint8_t new_val = 0u;
-
-		new_val = gpio_pin_get(dev_gpio, DT_GPIO_PIN(DT_ALIAS(sw0), gpios));
-		if (new_val != val) {
-			printk("New Button state %d.\n", new_val);
-			gpio_pin_toggle(dev_gpio, DT_GPIO_PIN(DT_ALIAS(led0), gpios));
-			val = new_val;
-		}
-
-		/* dont burn the CPU */
-		k_sleep(K_MSEC(10));
-	}
-
-	return 0;
+  sys_reboot(SYS_REBOOT_COLD);
 }
