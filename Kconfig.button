@@ -1,0 +1,26 @@
+config PINETIME_BUTTON
+  bool "Enable pinetime button driver"
+  select GPIO
+  depends on BOARD_PINETIME
+  help
+    When enabled pinetime button driver is ready for using.
+
+if PINETIME_BUTTON
+
+config BUTTON_DEBOUNCE_DELAY_MS
+  int "Time used to debounce the pressed key. Use 0 to disable the feature."
+  default 5
+
+config BUTTON_DOUBLE_CLICK_DURATION_MS
+  int "Time used for double click detection."
+  default 200
+
+config BUTTON_HOLD_DURATION_MS
+  int "Time used to detect button hold down."
+  default 3000
+
+config BUTTON_INIT_PRIORITY
+  int "Init priority"
+  default 60
+
+endif # PINETIME_BUTTON

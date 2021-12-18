@@ -1,6 +1,7 @@
 menu "ztime"
 
 rsource "Kconfig.log_backend_ble"
+rsource "Kconfig.button"
 
 endmenu
 

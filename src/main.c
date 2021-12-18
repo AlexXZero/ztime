@@ -1,4 +1,5 @@
 #include "ble/ble.h"        // for ble_init()
+#include "button.h"         // for button_*()
 
 #include <zephyr.h>
 #include <power/reboot.h>   // for sys_reboot()
@@ -30,6 +31,21 @@ static void wdt_feed(void)
   NRF_WDT->RR[0] = WDT_RR_RR_Reload;
 }
 
+static void button_click_handler(void *unused)
+{
+  LOG_INF("click");
+}
+
+static void button_double_click_handler(void *unused)
+{
+  LOG_INF("double click");
+}
+
+static void button_hold_handler(void *unused)
+{
+  sys_reboot(SYS_REBOOT_COLD);
+}
+
 void main(void)
 {
 #ifdef CONFIG_MCUMGR_CMD_OS_MGMT
@@ -48,6 +64,10 @@ void main(void)
 #ifdef CONFIG_BT
   ble_init();
 #endif
+
+  button_set_click_handler(button_click_handler, NULL);
+  button_set_double_click_handler(button_double_click_handler, NULL);
+  button_set_hold_handler(button_hold_handler, NULL);
 
   /* The system work queue handles all incoming mcumgr requests.  Let the
    * main thread idle while the mcumgr server runs.
