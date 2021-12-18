@@ -1,0 +1,30 @@
+config LOG_BACKEND_BLE_NUS
+  bool "Enable BLE NUS backend"
+  select RING_BUFFER
+  depends on BT
+  depends on LOG
+  help
+    When enabled backend is using BLE NUS service to output logs.
+
+if LOG_BACKEND_BLE_NUS
+
+config LOG_BACKEND_BLE_NUS_THREAD_STACKSIZE
+  int "Size of stack area used by BLE_LOG thread"
+  default 1024
+
+config LOG_BACKEND_BLE_NUS_THREAD_PRIORITY
+  int "Scheduling priority used by BLE_LOG thread"
+  default 7
+
+config LOG_BACKEND_BLE_NUS_BUFFER_SIZE
+  int "Size of buffer which used by BLE_LOG thread"
+  default 1024
+
+config LOG_BACKEND_BLE_NUS_SYST_ENABLE
+  bool "MIPI SyS-T"
+  depends on LOG_BACKEND_BLE_NUS
+  depends on LOG_MIPI_SYST_ENABLE
+  help
+    When enabled backend is using BLE to output syst format logs.
+
+endif # LOG_BACKEND_BLE_NUS

@@ -1,0 +1,7 @@
+menu "ztime"
+
+rsource "Kconfig.log_backend_ble"
+
+endmenu
+
+source "Kconfig.zephyr"

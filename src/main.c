@@ -1,4 +1,4 @@
-#include "bluetooth.h"      // for bluetooth_init()
+#include "ble/ble.h"        // for ble_init()
 
 #include <zephyr.h>
 #include <power/reboot.h>   // for sys_reboot()
@@ -46,13 +46,13 @@ void main(void)
 #endif
 
 #ifdef CONFIG_BT
-  bluetooth_init();
+  ble_init();
 #endif
 
   /* The system work queue handles all incoming mcumgr requests.  Let the
    * main thread idle while the mcumgr server runs.
    */
-  for (size_t i = 0; i < 120; i++) { // 2 minutes
+  for (size_t i = 0; i < 1800; i++) { // 30 minutes
     if (wdt_is_enabled()) {
       wdt_feed();
     }

@@ -1,4 +1,4 @@
-#include "bluetooth.h"
+#include "ble/ble.h"
 
 #include <zephyr.h>
 #include <stddef.h>
@@ -12,7 +12,7 @@
 #endif
 
 #include <logging/log.h>
-LOG_MODULE_REGISTER(ztime_bluetooth, LOG_LEVEL_INF);
+LOG_MODULE_REGISTER(ztime_ble, LOG_LEVEL_INF);
 
 
 static struct k_work advertise_work;
@@ -37,7 +37,7 @@ static void advertise(struct k_work *work)
   LOG_INF("Advertising successfully started");
 }
 
-void bluetooth_init(void)
+void ble_init(void)
 {
   k_work_init(&advertise_work, advertise);
 
