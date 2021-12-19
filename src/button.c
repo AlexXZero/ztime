@@ -1,4 +1,4 @@
-#ifdef CONFIG_PINETIME_BUTTON
+#ifdef CONFIG_ZTIME_BUTTON
 
 #include "button.h"
 #include "button_internal.h"
@@ -170,4 +170,4 @@ static int button_init(const struct device *dev)
 
 SYS_INIT(button_init, POST_KERNEL, CONFIG_BUTTON_INIT_PRIORITY);
 
-#endif // CONFIG_PINETIME_BUTTON
+#endif // CONFIG_ZTIME_BUTTON

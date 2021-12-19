@@ -9,6 +9,7 @@
  */
 
 /dts-v1/;
+#include <freq.h>
 #include <nordic/nrf52832_qfaa.dtsi>
 
 / {
@@ -26,8 +27,6 @@
 		led1 = &blled1;	/* backlight mid */
 		led2 = &blled2;	/* backlight high */
 		led3 = &statusled;	/* status led, may be not populated */
-		sw0 = &key_in;  /* key in */
-		sw1 = &key_out;  /* key out */
 	};
 
 	leds {
@@ -116,7 +115,7 @@
 	flash1: mx25r6435f@0 {
 		compatible = "jedec,spi-nor";
 		reg = <0>;
-		spi-max-frequency = <8000000>; /* 8MHz */
+		spi-max-frequency = <DT_FREQ_M(80)>; /* 80MHz */
 		label = "CMOS MX25L";
 		jedec-id = [0b 40 16];
 		size = <67108864>;
@@ -126,7 +125,7 @@
 	st7789v: st7789v@1 {
 		compatible = "sitronix,st7789v";
 		reg = <1>;
-		spi-max-frequency = <8000000>; /* 8MHz */
+		spi-max-frequency = <DT_FREQ_M(20)>; /* 20MHz */
 		label = "ST7789V";
 		cmd-data-gpios = <&gpio0 18 GPIO_ACTIVE_LOW>;	/* DET */
 		reset-gpios = <&gpio0 26 GPIO_ACTIVE_LOW>;	/* RESX reset */
