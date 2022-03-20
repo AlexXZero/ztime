@@ -1,6 +1,8 @@
 # ztime
 Firmware for pinetime smartwatch written in C and based on ZephyrOS
 
+# Note: This software is not intended for use on the territory of the Russian Federation and the Republic of Belarus. Any problems, up to and including damage to the device on which this software is running, are the responsibility of the user of this device.
+
 ## Developer getting started guide
 
 This document assumes that you run a GNU/Linux or Mac operating system.
